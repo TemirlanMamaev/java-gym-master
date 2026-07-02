@@ -41,7 +41,7 @@ public class Timetable {
         if (sessions == null) {
             return Collections.emptyList();
         }
-        return  new ArrayList<>(sessions);
+        return new ArrayList<>(sessions);
 
     }
 
