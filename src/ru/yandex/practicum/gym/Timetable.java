@@ -5,6 +5,7 @@ import java.util.*;
 public class Timetable {
 
     private final Map<DayOfWeek, TreeMap<TimeOfDay, List<TrainingSession>>> timetable = new HashMap<>();
+    private final Map<DayOfWeek, List<TrainingSession>> sessionsByDay = new HashMap<>();
 
     public Timetable() {
 
@@ -13,23 +14,22 @@ public class Timetable {
     public void addNewTrainingSession(TrainingSession trainingSession) {
         DayOfWeek day = trainingSession.getDayOfWeek();
         TimeOfDay time = trainingSession.getTimeOfDay();
-        timetable.putIfAbsent(day, new TreeMap<>());
-        TreeMap<TimeOfDay, List<TrainingSession>> dayMap = timetable.get(day);
-        dayMap.putIfAbsent(time, new ArrayList<>());
-        List<TrainingSession> sessionsTime = dayMap.get(time);
-        sessionsTime.add(trainingSession);
+
+        timetable
+                .computeIfAbsent(day, d -> new TreeMap<>())
+                .computeIfAbsent(time, t -> new ArrayList<>())
+                .add(trainingSession);
+
+        sessionsByDay
+                .computeIfAbsent(day, d -> new ArrayList<>())
+                .add(trainingSession);
+
+        sessionsByDay.get(day)
+                .sort(Comparator.comparing(TrainingSession::getTimeOfDay));
     }
 
     public List<TrainingSession> getTrainingSessionsForDay(DayOfWeek dayOfWeek) {
-        TreeMap<TimeOfDay, List<TrainingSession>> dayMap = timetable.get(dayOfWeek);
-        List<TrainingSession> result = new ArrayList<>();
-        if (dayMap == null || dayMap.isEmpty()) {
-            return Collections.emptyList();
-        }
-        for (List<TrainingSession> list : dayMap.values()) {
-            result.addAll(list);
-        }
-        return result;
+        return sessionsByDay.getOrDefault(dayOfWeek, Collections.emptyList());
     }
 
     public List<TrainingSession> getTrainingSessionsForDayAndTime(DayOfWeek dayOfWeek, TimeOfDay timeOfDay) {
