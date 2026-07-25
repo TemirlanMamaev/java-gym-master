@@ -6,6 +6,7 @@ public class Timetable {
 
     private final Map<DayOfWeek, TreeMap<TimeOfDay, List<TrainingSession>>> timetable = new HashMap<>();
     private final Map<DayOfWeek, List<TrainingSession>> sessionsByDay = new HashMap<>();
+
     public Timetable() {
 
     }
